@@ -1,0 +1,12 @@
+commands used for the creation of our database in mongosh:
+use arcade_db
+
+db.createCollection("users")
+db.createCollection("scores")
+
+db.users.createIndex({ username: 1 }, { unique: true })
+db.users.createIndex({ email: 1 }, { unique: true })
+
+db.scores.createIndex({ userId: 1, gameId: 1, score: -1 })
+db.scores.createIndex({ gameId: 1, score: -1 })
+db.scores.createIndex({ createdAt: 1 })

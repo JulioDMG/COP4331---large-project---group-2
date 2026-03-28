@@ -1,0 +1,6 @@
+2026-03-28 00:54:04: [dotenv@17.3.1] injecting env (2) from .env -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
+2026-03-28 00:54:05: Server running on port 5000 in development mode
+2026-03-28 00:54:05: MongoDB connected
+2026-03-28 01:00:37: [dotenv@17.3.1] injecting env (2) from .env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+2026-03-28 01:00:37: Server running on port 5000 in development mode
+2026-03-28 01:00:38: MongoDB connected

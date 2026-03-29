@@ -4,3 +4,9 @@
 2026-03-28 01:00:37: [dotenv@17.3.1] injecting env (2) from .env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
 2026-03-28 01:00:37: Server running on port 5000 in development mode
 2026-03-28 01:00:38: MongoDB connected
+2026-03-28 01:09:11: [dotenv@17.3.1] injecting env (2) from .env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
+2026-03-28 01:09:12: Server running on port 5000 in development mode
+2026-03-28 01:09:12: MongoDB connected
+2026-03-28 01:13:21: [dotenv@17.3.1] injecting env (2) from .env -- tip: 🔐 prevent building .env in docker: https://dotenvx.com/prebuild
+2026-03-28 01:13:21: Server running on port 5000 in development mode
+2026-03-28 01:13:21: MongoDB connected

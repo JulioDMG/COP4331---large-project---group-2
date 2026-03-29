@@ -8,7 +8,7 @@ const app = express();
 
 //middleware
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:3000', // Restrict in production
+  origin: process.env.CLIENT_URL || 'http://localhost:3000',
   credentials: true
 }));
 app.use(express.json());
@@ -31,7 +31,7 @@ app.get("/", (req, res) => {
   });
 });
 
-//error handling middleware (optional but recommended)
+//error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ message: 'Something went wrong!' });

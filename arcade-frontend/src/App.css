@@ -1,0 +1,85 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background:
+    radial-gradient(circle at top, rgba(255, 136, 60, 0.12), transparent 30%),
+    linear-gradient(180deg, #140a22 0%, #0b1020 55%, #08101d 100%);
+  color: #f8fafc;
+}
+
+.app {
+  min-height: 100vh;
+  padding: 24px;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 50px;
+}
+
+.login-button,
+.play-button {
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 12px 22px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  box-shadow: 0 0 18px rgba(168, 85, 247, 0.25);
+}
+
+.login-button:hover,
+.play-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 22px rgba(236, 72, 153, 0.3);
+}
+
+.hero {
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.hero h1 {
+  font-size: 4rem;
+  margin-bottom: 12px;
+  color: #fff7ed;
+  text-shadow: 0 0 14px rgba(255, 140, 66, 0.35);
+}
+
+.hero p {
+  color: #fbcfe8;
+  font-size: 1.1rem;
+  margin-top: 20px;
+}
+
+.games-section {
+  margin-top: 48px;
+}
+
+.games-section h2 {
+  color: #fde68a;
+  margin-bottom: 18px;
+}
+
+.game-card {
+  background: rgba(30, 41, 59, 0.78);
+  border: 1px solid rgba(255, 140, 66, 0.2);
+  padding: 28px;
+  border-radius: 16px;
+  max-width: 500px;
+  margin: 0 auto;
+  box-shadow: 0 0 24px rgba(255, 140, 66, 0.08);
+}
+
+.game-card h3 {
+  color: #fff7ed;
+  margin-bottom: 12px;
+}
+
+.game-card p {
+  color: #e5e7eb;
+  margin-bottom: 18px;
+}

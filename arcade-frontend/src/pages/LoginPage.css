@@ -1,0 +1,156 @@
+/* LoginPage.css
+   Only styles that don't already exist in App.css.
+   Reuses: .app, .top-bar, .hero, .play-button from App.css
+*/
+
+/* ── Back link in top-bar ───────────────────────────────────────────────────── */
+.arcade-back-link {
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 12px 22px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 0.95rem;
+  box-shadow: 0 0 18px rgba(168, 85, 247, 0.25);
+  transition: transform 0.15s, box-shadow 0.15s;
+  display: inline-block;
+}
+
+.arcade-back-link:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 22px rgba(236, 72, 153, 0.3);
+}
+
+/* ── Login card ─────────────────────────────────────────────────────────────── */
+.login-card {
+  background: rgba(30, 41, 59, 0.78);
+  border: 1px solid rgba(255, 140, 66, 0.2);
+  border-radius: 16px;
+  padding: 40px 36px;
+  max-width: 420px;
+  width: 100%;
+  margin: 0 auto;
+  box-shadow: 0 0 24px rgba(255, 140, 66, 0.08);
+  text-align: left;
+}
+
+/* ── Tabs ───────────────────────────────────────────────────────────────────── */
+.login-tabs {
+  display: flex;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 4px;
+  margin-bottom: 28px;
+  gap: 4px;
+}
+
+.login-tab {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.login-tab.active {
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(168, 85, 247, 0.35);
+}
+
+/* ── Headings ───────────────────────────────────────────────────────────────── */
+.login-title {
+  color: #fff7ed;
+  font-size: 1.6rem;
+  margin-bottom: 6px;
+}
+
+.login-sub {
+  color: #e5e7eb;
+  font-size: 0.88rem;
+  margin-bottom: 24px;
+  margin-top: 0;
+}
+
+/* ── Alert ──────────────────────────────────────────────────────────────────── */
+.login-alert {
+  padding: 11px 14px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  margin-bottom: 18px;
+}
+
+.login-alert--error {
+  background: rgba(248, 113, 113, 0.12);
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  color: #f87171;
+}
+
+.login-alert--success {
+  background: rgba(34, 211, 160, 0.12);
+  border: 1px solid rgba(34, 211, 160, 0.35);
+  color: #22d3a0;
+}
+
+/* ── Fields ─────────────────────────────────────────────────────────────────── */
+.login-field {
+  margin-bottom: 18px;
+}
+
+.login-field label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 7px;
+}
+
+.login-field input {
+  width: 100%;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #f8fafc;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+}
+
+.login-field input::placeholder {
+  color: rgba(255, 255, 255, 0.25);
+}
+
+.login-field input:focus {
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.18);
+}
+
+.login-field input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Submit — extends .play-button from App.css ─────────────────────────────── */
+.login-submit {
+  width: 100%;
+  margin-top: 6px;
+  justify-content: center;
+}
+
+.login-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}

@@ -163,7 +163,7 @@ function TictactoePage() {
         ← Back
       </button>
 
-      <h1>Tic-Tac-Toe</h1>
+      <h1>ARCADE TIC TAC TOE</h1>
       <p>You are X • CPU is O</p>
       <p>{status}</p>
 

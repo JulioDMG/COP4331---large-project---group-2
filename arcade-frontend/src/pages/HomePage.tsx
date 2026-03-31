@@ -70,8 +70,14 @@ function HomePage() {
           <button
             type="button"
             className="play-button"
-            onClick={handlePlayClick}
-          >
+            onClick={() => {
+              if (!isAuthenticated) {
+                navigate('/login');
+              } else {
+                navigate('/snake');
+              }
+            }}
+        >
             Play Snake
           </button>
         </div>

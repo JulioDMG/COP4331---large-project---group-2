@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const GRID_SIZE = 15;
 const INITIAL_SNAKE = [{ x: 7, y: 7 }];
@@ -8,6 +9,8 @@ type Direction = 'UP' | 'DOWN' | 'LEFT' | 'RIGHT';
 type Cell = { x: number; y: number };
 
 function SnakePage() {
+  const navigate = useNavigate();
+
   const [snake, setSnake] = useState<Cell[]>(INITIAL_SNAKE);
   const [food, setFood] = useState<Cell>(INITIAL_FOOD);
   const [direction, setDirection] = useState<Direction>('RIGHT');
@@ -114,8 +117,25 @@ function SnakePage() {
         backgroundColor: '#111',
         color: 'white',
         padding: '20px',
+        position: 'relative',
       }}
     >
+      {/* 🔙 Back Button */}
+      <button
+        onClick={() => navigate('/')}
+        style={{
+          position: 'absolute',
+          top: '20px',
+          left: '20px',
+          padding: '8px 16px',
+          borderRadius: '6px',
+          border: 'none',
+          cursor: 'pointer',
+        }}
+      >
+        ← Back
+      </button>
+
       <h1>Snake</h1>
       <p>Score: {score}</p>
       <p>Use arrow keys to move</p>

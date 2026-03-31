@@ -65,7 +65,7 @@ function getCpuMove(board: SquareValue[]): number {
   return availableMoves[Math.floor(Math.random() * availableMoves.length)];
 }
 
-function TicTacToePage() {
+function TictactoePage() {
   const navigate = useNavigate();
 
   const [board, setBoard] = useState<SquareValue[]>(Array(9).fill(null));
@@ -217,4 +217,4 @@ function TicTacToePage() {
   );
 }
 
-export default TicTacToePage;
+export default TictactoePage;

@@ -52,6 +52,29 @@ function HomePage() {
               Play Tic-Tac-Toe
             </button>
           </div>
+        <div className="game-card">
+          <h3>Minesweeper</h3>
+          <p>Clear the board, avoid the mines, and test your logic.</p>
+          <button
+            type="button"
+            className="play-button"
+            onClick={handlePlayClick}
+          >
+            Play Minesweeper
+          </button>
+        </div>
+
+        <div className="game-card">
+          <h3>Snake</h3>
+          <p>Collect food, grow longer, and avoid crashing.</p>
+          <button
+            type="button"
+            className="play-button"
+            onClick={handlePlayClick}
+          >
+            Play Snake
+          </button>
+        </div>
         </section>
       </main>
     </div>

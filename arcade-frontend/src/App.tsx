@@ -5,6 +5,9 @@ import LoginPage from './pages/LoginPage';
 import SnakePage from './pages/SnakePage';
 import MinesweeperPage from './pages/MinesweeperPage';
 import TictactoePage from './pages/TictactoePage';
+import SudokuPage from './pages/SudokuPage';
+import DinorunPage from './pages/DinorunPage';
+import BattleshipPage from './pages/BattleshipPage';
 import './App.css';
 
 function App() {
@@ -17,6 +20,9 @@ function App() {
           <Route path="/snake" element={<SnakePage />} />
           <Route path="/minesweeper" element={<MinesweeperPage />} />
           <Route path="/tictactoe" element={<TictactoePage />} />
+          <Route path="/sudoku" element={<SudokuPage />} />
+          <Route path="/dinorun" element={<DinorunPage />} />
+          <Route path="/battleship" element={<BattleshipPage />} />
         </Routes>
       </Router>
     </AuthProvider>

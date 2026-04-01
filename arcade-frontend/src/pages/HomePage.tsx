@@ -17,7 +17,6 @@ function HomePage() {
     if (!isAuthenticated) {
       navigate('/login');
     } else {
-      // TODO: navigate to the game when ready
       navigate('/tictactoe');
     }
   };
@@ -52,40 +51,96 @@ function HomePage() {
               Play Tic-Tac-Toe
             </button>
           </div>
-        <div className="game-card">
-          <h3>Minesweeper</h3>
-          <p>Clear the board, avoid the mines, and test your logic.</p>
-          <button
-            type="button"
-            className="play-button"
-            onClick={() => {
-              if (!isAuthenticated) {
-                navigate('/login');
-              } else {
-                navigate('/minesweeper');
-              }
-            }}
-          >
-            Play Minesweeper
-          </button>
 
-        <div className="game-card">
-          <h3>Snake</h3>
-          <p>Collect food, grow longer, and avoid crashing.</p>
-          <button
-            type="button"
-            className="play-button"
-            onClick={() => {
-              if (!isAuthenticated) {
-                navigate('/login');
-              } else {
-                navigate('/snake');
-              }
-            }}
-        >
-            Play Snake
-          </button>
-        </div>
+          <div className="game-card">
+            <h3>Minesweeper</h3>
+            <p>Clear the board, avoid the mines, and test your logic.</p>
+            <button
+              type="button"
+              className="play-button"
+              onClick={() => {
+                if (!isAuthenticated) {
+                  navigate('/login');
+                } else {
+                  navigate('/minesweeper');
+                }
+              }}
+            >
+              Play Minesweeper
+            </button>
+          </div>
+
+          <div className="game-card">
+            <h3>Snake</h3>
+            <p>Collect food, grow longer, and avoid crashing.</p>
+            <button
+              type="button"
+              className="play-button"
+              onClick={() => {
+                if (!isAuthenticated) {
+                  navigate('/login');
+                } else {
+                  navigate('/snake');
+                }
+              }}
+            >
+              Play Snake
+            </button>
+          </div>
+
+          <div className="game-card">
+            <h3>Sudoku</h3>
+            <p>Solve the puzzle and test your logic skills.</p>
+            <button
+              type="button"
+              className="play-button"
+              onClick={() => {
+                if (!isAuthenticated) {
+                  navigate('/login');
+                } else {
+                  navigate('/sudoku');
+                }
+              }}
+            >
+              Play Sudoku
+            </button>
+          </div>
+
+          <div className="game-card">
+            <h3>Battleship</h3>
+            <p>Find the enemy ships and sink the fleet.</p>
+            <button
+              type="button"
+              className="play-button"
+              onClick={() => {
+                if (!isAuthenticated) {
+                  navigate('/login');
+                } else {
+                  navigate('/battleship');
+                }
+              }}
+            >
+              Play Battleship
+            </button>
+          </div>
+
+          <div className="game-card">
+            <h3>Dino Run</h3>
+            <p>Jump over obstacles and survive as long as you can.</p>
+            <button
+              type="button"
+              className="play-button"
+              onClick={() => {
+                if (!isAuthenticated) {
+                  navigate('/login');
+                } else {
+                  navigate('/dinorun');
+                }
+              }}
+            >
+              Play Dino Run
+            </button>
+          </div>
         </section>
       </main>
     </div>

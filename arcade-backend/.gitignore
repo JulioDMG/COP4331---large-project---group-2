@@ -1,0 +1,15 @@
+## Excluding .env again, juuuust to be sure
+
+# Environment
+.env
+.env.local
+.env.*.local
+*.env
+
+# Editor backup/swap files that might capture secrets
+.env.bak
+.env.backup
+\#*\#
+*~
+*.swp
+*.swo

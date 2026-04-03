@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+
+# Environment
+.env
+.env.local
+.env.*.local
+*.env
+
+# Editor backup/swap files that might capture secrets
+.env.bak
+.env.backup
+\#*\#
+*~
+*.swp
+*.swo
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Build output
+dist/
+build/
+
+# OS garbage
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# PM2
+.pm2/
+

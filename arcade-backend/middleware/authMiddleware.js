@@ -16,7 +16,7 @@ exports.protect = async (req, res, next) => {
 
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    
+
     //check if user still exists
     const user = await User.findById(decoded.id).select('-password');
     if (!user) {
@@ -42,7 +42,7 @@ exports.protect = async (req, res, next) => {
 exports.authorize = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
-      return res.status(403).json({ 
+      return res.status(403).json({
         message: `User role ${req.user.role} is not authorized to access this route` 
       });
     }

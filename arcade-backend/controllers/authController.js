@@ -19,7 +19,7 @@ exports.register = async (req, res) => {
 
     const existingUser = await User.findOne({ $or: [{ email }, { username }] });
     if (existingUser) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         message: existingUser.email === email ? 'Email already registered' : 'Username already taken' 
       });
     }
@@ -86,9 +86,9 @@ exports.getMe = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-    res.json({ 
-      success: true, 
-      data: { user } 
+    res.json({
+      success: true,
+      data: { user }
     });
   } catch (error) {
     console.error('GetMe error:', error);

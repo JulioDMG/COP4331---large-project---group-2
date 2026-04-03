@@ -14,7 +14,7 @@ app.use(cors({
   origin: function(origin, callback) {
     // Allow requests with no origin (like mobile apps, curl, Postman)
     if (!origin) return callback(null, true);
-    
+
     if (allowedOrigins.indexOf(origin) !== -1 || origin.includes('tempclassproject.xyz')) {
       callback(null, true);
     } else {
@@ -36,10 +36,10 @@ app.use("/api/auth", require("./routes/authRoutes"));
 
 //health check
 app.get("/", (req, res) => {
-  res.json({ 
-    message: "Arcade API running", 
+  res.json({
+    message: "Arcade API running",
     status: "healthy",
-    environment: process.env.NODE_ENV 
+    environment: process.env.NODE_ENV
   });
 });
 

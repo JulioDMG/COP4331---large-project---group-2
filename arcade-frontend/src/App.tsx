@@ -7,8 +7,8 @@ import MinesweeperPage from './pages/MinesweeperPage';
 import TictactoePage from './pages/TictactoePage';
 import SudokuPage from './pages/SudokuPage';
 import DinorunPage from './pages/DinorunPage';
-import BattleshipPage from './pages/BattleshipPage';
-import './App.css';
+/* import BattleshipPage from './pages/BattleshipPage';
+ */import './App.css';
 
 function App() {
   return (
@@ -22,8 +22,8 @@ function App() {
           <Route path="/tictactoe" element={<TictactoePage />} />
           <Route path="/sudoku" element={<SudokuPage />} />
           <Route path="/dinorun" element={<DinorunPage />} />
-          <Route path="/battleship" element={<BattleshipPage />} />
-        </Routes>
+{/*           <Route path="/battleship" element={<BattleshipPage />} />
+ */}        </Routes>
       </Router>
     </AuthProvider>
   );

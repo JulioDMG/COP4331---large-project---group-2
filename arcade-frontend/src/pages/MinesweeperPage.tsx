@@ -139,33 +139,33 @@ function revealAllMines(board: Cell[][]): Cell[][] {
 
 function getCellColor(cell: Cell): string {
   if (!cell.isRevealed) {
-    return cell.isFlagged ? '#777' : '#555';
+    return cell.isFlagged ? '#ff00aa' : '#1a103d';
   }
 
-  if (cell.isMine) return '#dc2626';
-  return '#d1d5db';
+  if (cell.isMine) return '#ff2e63';
+  return '#0f172a';
 }
 
 function getNumberColor(count: number): string {
   switch (count) {
     case 1:
-      return '#2563eb';
+      return '#00f7ff';
     case 2:
-      return '#16a34a';
+      return '#39ff14';
     case 3:
-      return '#dc2626';
+      return '#ff4fd8';
     case 4:
-      return '#7c3aed';
+      return '#9d4edd';
     case 5:
-      return '#b45309';
+      return '#ff9f1c';
     case 6:
-      return '#0891b2';
+      return '#00ffd5';
     case 7:
-      return '#111827';
+      return '#ffffff';
     case 8:
-      return '#6b7280';
+      return '#94a3b8';
     default:
-      return '#111827';
+      return '#ffffff';
   }
 }
 
@@ -254,10 +254,12 @@ function MinesweeperPage() {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#111',
-        color: 'white',
+        background:
+          'radial-gradient(circle at top, #24124d 0%, #12051f 45%, #05030d 100%)',
+        color: '#f8fafc',
         padding: '20px',
         position: 'relative',
+        fontFamily: 'Arial, sans-serif',
       }}
     >
       <button
@@ -266,86 +268,145 @@ function MinesweeperPage() {
           position: 'absolute',
           top: '20px',
           left: '20px',
-          padding: '8px 16px',
-          borderRadius: '6px',
-          border: 'none',
+          padding: '10px 18px',
+          borderRadius: '10px',
+          border: '1px solid #00f7ff',
           cursor: 'pointer',
+          background: '#12051f',
+          color: '#00f7ff',
+          boxShadow: '0 0 12px rgba(0, 247, 255, 0.6)',
+          fontWeight: 'bold',
         }}
       >
         ← Back
       </button>
 
-      <h1>Minesweeper</h1>
-      <p>Left click to reveal • Right click to flag</p>
-      <p>Flags left: {flagsLeft}</p>
-
-      {!gameStarted && !gameOver && !won && <p>Click any square to start</p>}
-      {gameOver && <h2 style={{ color: '#ef4444' }}>Game Over</h2>}
-      {won && <h2 style={{ color: '#22c55e' }}>You Win!</h2>}
-
       <div
         style={{
-          display: 'grid',
-          gridTemplateColumns: `repeat(${COLS}, 40px)`,
-          gridTemplateRows: `repeat(${ROWS}, 40px)`,
-          gap: '3px',
-          backgroundColor: '#333',
-          padding: '10px',
-          borderRadius: '8px',
+          width: '100%',
+          maxWidth: '640px',
+          textAlign: 'center',
+          background: 'rgba(9, 6, 20, 0.78)',
+          border: '2px solid #ff00aa',
+          borderRadius: '20px',
+          padding: '28px',
+          boxShadow:
+            '0 0 18px rgba(255, 0, 170, 0.45), 0 0 28px rgba(0, 247, 255, 0.2)',
         }}
       >
-        {board.flat().map((cell) => {
-          let display = '';
+        <h1
+          style={{
+            margin: '0 0 10px 0',
+            fontSize: '2.4rem',
+            letterSpacing: '2px',
+            color: '#f3f0f0',
+            textShadow: '0 0 10px #00f7ff, 0 0 18px #ff00aa',
+          }}
+        >
+          MINESWEEPER
+        </h1>
 
-          if (cell.isRevealed) {
-            if (cell.isMine) {
-              display = '💣';
-            } else if (cell.neighborMines > 0) {
-              display = String(cell.neighborMines);
+        <p style={{ color: '#cbd5e1', marginBottom: '6px' }}>
+          Left click to reveal • Right click to flag
+        </p>
+        <p style={{ color: '#39ff14', fontWeight: 'bold', marginBottom: '10px' }}>
+          Flags left: {flagsLeft}
+        </p>
+
+        {!gameStarted && !gameOver && !won && (
+          <p style={{ color: '#facc15', marginBottom: '16px' }}>
+            Click any square to start
+          </p>
+        )}
+        {gameOver && (
+          <h2 style={{ color: '#ff2e63', textShadow: '0 0 10px #ff2e63' }}>
+            Game Over
+          </h2>
+        )}
+        {won && (
+          <h2 style={{ color: '#39ff14', textShadow: '0 0 10px #39ff14' }}>
+            You Win!
+          </h2>
+        )}
+
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: `repeat(${COLS}, 40px)`,
+            gridTemplateRows: `repeat(${ROWS}, 40px)`,
+            gap: '4px',
+            justifyContent: 'center',
+            background: '#090612',
+            padding: '14px',
+            borderRadius: '16px',
+            border: '2px solid #ff00aa',
+            boxShadow: 'inset 0 0 20px rgba(0, 247, 255, 0.12), 0 0 18px rgba(0, 247, 255, 0.22)',
+          }}
+        >
+          {board.flat().map((cell) => {
+            let display = '';
+
+            if (cell.isRevealed) {
+              if (cell.isMine) {
+                display = '💣';
+              } else if (cell.neighborMines > 0) {
+                display = String(cell.neighborMines);
+              }
+            } else if (cell.isFlagged) {
+              display = '🚩';
             }
-          } else if (cell.isFlagged) {
-            display = '🚩';
-          }
 
-          return (
-            <button
-              key={`${cell.row}-${cell.col}`}
-              type="button"
-              onClick={() => handleCellClick(cell.row, cell.col)}
-              onContextMenu={(e) => handleRightClick(e, cell.row, cell.col)}
-              style={{
-                width: '40px',
-                height: '40px',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontSize: '16px',
-                fontWeight: 'bold',
-                backgroundColor: getCellColor(cell),
-                color: cell.isRevealed && !cell.isMine
-                  ? getNumberColor(cell.neighborMines)
-                  : '#111827',
-              }}
-            >
-              {display}
-            </button>
-          );
-        })}
+            return (
+              <button
+                key={`${cell.row}-${cell.col}`}
+                type="button"
+                onClick={() => handleCellClick(cell.row, cell.col)}
+                onContextMenu={(e) => handleRightClick(e, cell.row, cell.col)}
+                style={{
+                  width: '40px',
+                  height: '40px',
+                  border: cell.isRevealed
+                    ? '1px solid #334155'
+                    : '1px solid #ff00aa',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  fontSize: '16px',
+                  fontWeight: 'bold',
+                  backgroundColor: getCellColor(cell),
+                  color:
+                    cell.isRevealed && !cell.isMine
+                      ? getNumberColor(cell.neighborMines)
+                      : '#ffffff',
+                  boxShadow: cell.isRevealed
+                    ? 'inset 0 0 8px rgba(255,255,255,0.05)'
+                    : '0 0 10px rgba(255, 0, 170, 0.28)',
+                  transition: '0.15s ease',
+                }}
+              >
+                {display}
+              </button>
+            );
+          })}
+        </div>
+
+        <button
+          type="button"
+          onClick={resetGame}
+          style={{
+            marginTop: '22px',
+            padding: '12px 22px',
+            borderRadius: '12px',
+            border: '1px solid #39ff14',
+            cursor: 'pointer',
+            background: '#0b1220',
+            color: '#39ff14',
+            fontWeight: 'bold',
+            boxShadow: '0 0 12px rgba(57, 255, 20, 0.45)',
+          }}
+        >
+          Restart
+        </button>
       </div>
-
-      <button
-        type="button"
-        onClick={resetGame}
-        style={{
-          marginTop: '20px',
-          padding: '10px 20px',
-          borderRadius: '8px',
-          border: 'none',
-          cursor: 'pointer',
-        }}
-      >
-        Restart
-      </button>
     </div>
   );
 }

@@ -1,3 +1,4 @@
+process.env.NO_REQUIRE_IN_THE_MIDDLE = '1';
 require("dotenv").config();
 
 const express = require("express");
@@ -7,12 +8,10 @@ const cors = require("cors");
 const app = express();
 
 //middleware
-// More flexible CORS config
 const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:3000').split(',');
 
 app.use(cors({
   origin: function(origin, callback) {
-    // Allow requests with no origin (like mobile apps, curl, Postman)
     if (!origin) return callback(null, true);
 
     if (allowedOrigins.indexOf(origin) !== -1 || origin.includes('tempclassproject.xyz')) {
@@ -33,6 +32,7 @@ mongoose.connect(process.env.MONGO_URI)
 
 //routes
 app.use("/api/auth", require("./routes/authRoutes"));
+app.use("/api/scores", require("./routes/scores"));
 
 //health check
 app.get("/", (req, res) => {

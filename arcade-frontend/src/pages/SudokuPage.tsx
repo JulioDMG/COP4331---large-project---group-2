@@ -82,13 +82,9 @@ function SudokuPage() {
   const isFixedCell = (row: number, col: number) => initialPuzzle[row][col] !== 0;
 
   const isBoardComplete = useMemo(() => {
-    for (let row = 0; row < 9; row++) {
-      for (let col = 0; col < 9; col++) {
-        if (board[row][col] !== solution[row][col]) {
-          return false;
-        }
-      }
-    }
+    for (let row = 0; row < 9; row++)
+      for (let col = 0; col < 9; col++)
+        if (board[row][col] !== solution[row][col]) return false;
     return true;
   }, [board, solution]);
 
@@ -100,51 +96,23 @@ function SudokuPage() {
 
   const handleSelectCell = (row: number, col: number) => {
     setSelectedCell({ row, col });
-
-    if (isFixedCell(row, col)) {
-      setMessage('That number is locked.');
-    } else {
-      setMessage('Choose a number or clear the square.');
-    }
+    setMessage(isFixedCell(row, col) ? 'That number is locked.' : 'Choose a number or clear the square.');
   };
 
   const handlePlaceNumber = (num: number) => {
-    if (!selectedCell) {
-      setMessage('Select a square first.');
-      return;
-    }
-
+    if (!selectedCell) { setMessage('Select a square first.'); return; }
     const { row, col } = selectedCell;
-
-    if (isFixedCell(row, col)) {
-      setMessage('That number is locked.');
-      return;
-    }
-
+    if (isFixedCell(row, col)) { setMessage('That number is locked.'); return; }
     const nextBoard = cloneBoard(board);
     nextBoard[row][col] = num;
     setBoard(nextBoard);
-
-    if (num === solution[row][col]) {
-      setMessage(`Placed ${num}.`);
-    } else {
-      setMessage(`${num} is not correct for that square.`);
-    }
+    setMessage(num === solution[row][col] ? `Placed ${num}.` : `${num} is not correct for that square.`);
   };
 
   const handleClearCell = () => {
-    if (!selectedCell) {
-      setMessage('Select a square first.');
-      return;
-    }
-
+    if (!selectedCell) { setMessage('Select a square first.'); return; }
     const { row, col } = selectedCell;
-
-    if (isFixedCell(row, col)) {
-      setMessage('That number is locked.');
-      return;
-    }
-
+    if (isFixedCell(row, col)) { setMessage('That number is locked.'); return; }
     const nextBoard = cloneBoard(board);
     nextBoard[row][col] = 0;
     setBoard(nextBoard);
@@ -165,228 +133,231 @@ function SudokuPage() {
     setMessage('New puzzle loaded.');
   };
 
+  const neonBtn: React.CSSProperties = {
+    padding: '10px',
+    borderRadius: '10px',
+    border: '1px solid #f97316',
+    cursor: 'pointer',
+    background: '#160800',
+    color: '#f97316',
+    fontWeight: 'bold',
+    fontSize: '1rem',
+    boxShadow: '0 0 8px rgba(249, 115, 22, 0.5)',
+    transition: '0.15s ease',
+  };
+
   return (
     <div
       style={{
         minHeight: '100vh',
-        background: 'linear-gradient(to bottom, #f4f8ff 0%, #ffffff 100%)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'radial-gradient(circle at top, #1f0a00 0%, #0f0500 50%, #020100 100%)',
+        color: '#f8fafc',
         padding: '24px 16px',
+        fontFamily: 'Arial, sans-serif',
         boxSizing: 'border-box',
       }}
     >
-      <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+      {/* Back Button */}
+      <div style={{ width: '100%', maxWidth: '900px' }}>
         <button
           type="button"
-          className="buttons"
           onClick={() => navigate('/')}
-          style={{ marginBottom: '18px' }}
-        >
-          Back
-        </button>
-
-        <div
           style={{
-            background: '#ffffff',
-            border: '1px solid #d9e1ee',
-            borderRadius: '18px',
-            padding: '20px',
-            boxShadow: '0 8px 24px rgba(0,0,0,0.06)',
+            marginBottom: '18px',
+            padding: '10px 18px',
+            borderRadius: '10px',
+            border: '1px solid #fbbf24',
+            cursor: 'pointer',
+            background: '#0f0500',
+            color: '#fbbf24',
+            boxShadow: '0 0 12px rgba(251, 191, 36, 0.6)',
+            fontWeight: 'bold',
           }}
         >
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              gap: '16px',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-              marginBottom: '20px',
-            }}
-          >
-            <div>
-              <h1 style={{ margin: 0 }}>Sudoku</h1>
-              <p style={{ margin: '8px 0 0', color: '#555' }}>
-                Fill every row, column, and 3x3 box with numbers 1 through 9.
-              </p>
-            </div>
+          ← Back
+        </button>
+      </div>
 
-            <div
-              style={{
-                background: isBoardComplete ? '#dff7e8' : '#f5f7fb',
-                border: `1px solid ${isBoardComplete ? '#7bc596' : '#d9e1ee'}`,
-                borderRadius: '12px',
-                padding: '12px 16px',
-                fontWeight: 700,
-              }}
-            >
-              {isBoardComplete ? 'Puzzle Complete!' : 'In Progress'}
-            </div>
+      {/* Main Card */}
+      <div
+        style={{
+          width: '100%',
+          maxWidth: '900px',
+          background: 'rgba(15, 5, 0, 0.88)',
+          border: '2px solid #f97316',
+          borderRadius: '20px',
+          padding: '28px',
+          boxShadow: '0 0 20px rgba(249, 115, 22, 0.4), 0 0 50px rgba(249, 115, 22, 0.1)',
+        }}
+      >
+        {/* Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '24px' }}>
+          <div>
+            <h1 style={{
+              margin: 0,
+              fontSize: '2.4rem',
+              letterSpacing: '4px',
+              color: '#fff7ed',
+              textShadow: '0 0 10px #f97316, 0 0 24px #fb923c',
+            }}>
+              SUDOKU
+            </h1>
+            <p style={{ margin: '6px 0 0', color: '#a3a3a3', fontSize: '0.9rem' }}>
+              Fill every row, column, and 3×3 box with numbers 1–9.
+            </p>
           </div>
 
+          <div style={{
+            background: isBoardComplete ? 'rgba(57, 255, 20, 0.1)' : 'rgba(249, 115, 22, 0.1)',
+            border: `1px solid ${isBoardComplete ? '#39ff14' : '#f97316'}`,
+            borderRadius: '12px',
+            padding: '10px 18px',
+            fontWeight: 700,
+            color: isBoardComplete ? '#39ff14' : '#f97316',
+            boxShadow: isBoardComplete ? '0 0 10px rgba(57,255,20,0.4)' : '0 0 10px rgba(249,115,22,0.3)',
+            fontSize: '0.95rem',
+          }}>
+            {isBoardComplete ? '✓ Puzzle Complete!' : '● In Progress'}
+          </div>
+        </div>
+
+        {/* Grid + Controls */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(280px, 500px) minmax(200px, 1fr)', gap: '24px', alignItems: 'start' }}>
+
+          {/* Sudoku Grid */}
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'minmax(280px, 540px) minmax(220px, 1fr)',
-              gap: '24px',
-              alignItems: 'start',
+              gridTemplateColumns: 'repeat(9, 1fr)',
+              gap: '0',
+              width: '100%',
+              aspectRatio: '1 / 1',
+              border: '3px solid #f97316',
+              borderRadius: '8px',
+              overflow: 'hidden',
+              boxShadow: '0 0 20px rgba(249, 115, 22, 0.5), inset 0 0 20px rgba(249, 115, 22, 0.04)',
             }}
           >
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(9, 1fr)',
-                gap: '0',
-                width: '100%',
-                maxWidth: '540px',
-                aspectRatio: '1 / 1',
-                border: '3px solid #1f2937',
-                background: '#1f2937',
-              }}
-            >
-              {board.map((row, rowIndex) =>
-                row.map((value, colIndex) => {
-                  const isSelected =
-                    selectedCell?.row === rowIndex && selectedCell?.col === colIndex;
+            {board.map((row, rowIndex) =>
+              row.map((value, colIndex) => {
+                const isSelected = selectedCell?.row === rowIndex && selectedCell?.col === colIndex;
+                const fixed = isFixedCell(rowIndex, colIndex);
+                const conflict = cellHasConflict(rowIndex, colIndex);
 
-                  const fixed = isFixedCell(rowIndex, colIndex);
-                  const conflict = cellHasConflict(rowIndex, colIndex);
+                let bg = '#0f0400';
+                if (isSelected) bg = '#2d1000';
+                else if (fixed) bg = '#1a0a00';
 
-                  return (
-                    <button
-                      key={`${rowIndex}-${colIndex}`}
-                      type="button"
-                      onClick={() => handleSelectCell(rowIndex, colIndex)}
-                      style={{
-                        aspectRatio: '1 / 1',
-                        border: '1px solid #b9c4d6',
-                        borderTopWidth: rowIndex % 3 === 0 ? '3px' : '1px',
-                        borderLeftWidth: colIndex % 3 === 0 ? '3px' : '1px',
-                        borderRightWidth: colIndex === 8 ? '3px' : '1px',
-                        borderBottomWidth: rowIndex === 8 ? '3px' : '1px',
-                        borderColor: '#1f2937',
-                        background: isSelected
-                          ? '#dbeafe'
-                          : fixed
-                          ? '#eef2f7'
-                          : '#ffffff',
-                        color: conflict ? '#c62828' : fixed ? '#111827' : '#2563eb',
-                        fontSize: '1.35rem',
-                        fontWeight: fixed ? 800 : 700,
-                        cursor: 'pointer',
-                      }}
-                    >
-                      {value === 0 ? '' : value}
-                    </button>
-                  );
-                })
-              )}
-            </div>
+                let color = '#f97316';
+                if (fixed) color = '#fed7aa';
+                if (conflict) color = '#ff2e63';
+                if (isSelected && !fixed) color = '#fbbf24';
 
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '16px',
-              }}
-            >
-              <div
-                style={{
-                  background: '#f8fafc',
-                  border: '1px solid #d9e1ee',
-                  borderRadius: '14px',
-                  padding: '16px',
-                }}
-              >
-                <h2 style={{ marginTop: 0, marginBottom: '10px', fontSize: '1.1rem' }}>
-                  Controls
-                </h2>
-
-                <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(3, 1fr)',
-                    gap: '10px',
-                  }}
-                >
-                  {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
-                    <button
-                      key={num}
-                      type="button"
-                      className="buttons"
-                      onClick={() => handlePlaceNumber(num)}
-                    >
-                      {num}
-                    </button>
-                  ))}
-                </div>
-
-                <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: '1fr 1fr',
-                    gap: '10px',
-                    marginTop: '12px',
-                  }}
-                >
+                return (
                   <button
+                    key={`${rowIndex}-${colIndex}`}
                     type="button"
-                    className="buttons"
-                    onClick={handleClearCell}
+                    onClick={() => handleSelectCell(rowIndex, colIndex)}
+                    style={{
+                      aspectRatio: '1 / 1',
+                      border: '1px solid #2a1200',
+                      borderTopWidth: rowIndex % 3 === 0 ? '2px' : '1px',
+                      borderLeftWidth: colIndex % 3 === 0 ? '2px' : '1px',
+                      borderRightWidth: colIndex === 8 ? '2px' : '1px',
+                      borderBottomWidth: rowIndex === 8 ? '2px' : '1px',
+                      borderColor: (rowIndex % 3 === 0 || colIndex % 3 === 0) ? '#f97316' : '#3a1a00',
+                      background: bg,
+                      color,
+                      fontSize: '1.2rem',
+                      fontWeight: fixed ? 800 : 700,
+                      cursor: 'pointer',
+                      textShadow: conflict
+                        ? '0 0 6px #ff2e63'
+                        : isSelected
+                        ? '0 0 8px #fbbf24'
+                        : fixed
+                        ? 'none'
+                        : '0 0 4px #f97316',
+                      transition: '0.1s ease',
+                    }}
                   >
-                    Clear
+                    {value === 0 ? '' : value}
                   </button>
+                );
+              })
+            )}
+          </div>
 
-                  <button
-                    type="button"
-                    className="buttons"
-                    onClick={handleReset}
-                  >
-                    Reset
+          {/* Side Panel */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+
+            {/* Number Buttons */}
+            <div style={{
+              background: 'rgba(249, 115, 22, 0.05)',
+              border: '1px solid #f97316',
+              borderRadius: '14px',
+              padding: '16px',
+              boxShadow: '0 0 10px rgba(249, 115, 22, 0.2)',
+            }}>
+              <h2 style={{ marginTop: 0, marginBottom: '12px', fontSize: '1rem', color: '#f97316', letterSpacing: '2px', textShadow: '0 0 6px #f97316' }}>
+                CONTROLS
+              </h2>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
+                  <button key={num} type="button" onClick={() => handlePlaceNumber(num)} style={neonBtn}>
+                    {num}
                   </button>
-                </div>
-
-                <button
-                  type="button"
-                  className="buttons"
-                  onClick={handleNewPuzzle}
-                  style={{ marginTop: '12px', width: '100%' }}
-                >
-                  New Puzzle
+                ))}
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '10px' }}>
+                <button type="button" onClick={handleClearCell} style={{ ...neonBtn, borderColor: '#fbbf24', color: '#fbbf24', boxShadow: '0 0 8px rgba(251,191,36,0.4)' }}>
+                  Clear
+                </button>
+                <button type="button" onClick={handleReset} style={{ ...neonBtn, borderColor: '#fbbf24', color: '#fbbf24', boxShadow: '0 0 8px rgba(251,191,36,0.4)' }}>
+                  Reset
                 </button>
               </div>
+              <button type="button" onClick={handleNewPuzzle} style={{ ...neonBtn, marginTop: '10px', width: '100%', borderColor: '#ff2e63', color: '#ff2e63', boxShadow: '0 0 8px rgba(255,46,99,0.4)' }}>
+                New Puzzle
+              </button>
+            </div>
 
-              <div
-                style={{
-                  background: '#f8fafc',
-                  border: '1px solid #d9e1ee',
-                  borderRadius: '14px',
-                  padding: '16px',
-                }}
-              >
-                <h2 style={{ marginTop: 0, marginBottom: '10px', fontSize: '1.1rem' }}>
-                  Status
-                </h2>
-                <p style={{ margin: 0, color: '#444', lineHeight: 1.5 }}>
-                  {message}
-                </p>
-              </div>
+            {/* Status */}
+            <div style={{
+              background: 'rgba(249, 115, 22, 0.05)',
+              border: '1px solid #f97316',
+              borderRadius: '14px',
+              padding: '16px',
+              boxShadow: '0 0 10px rgba(249, 115, 22, 0.2)',
+            }}>
+              <h2 style={{ marginTop: 0, marginBottom: '10px', fontSize: '1rem', color: '#f97316', letterSpacing: '2px', textShadow: '0 0 6px #f97316' }}>
+                STATUS
+              </h2>
+              <p style={{ margin: 0, color: '#cbd5e1', lineHeight: 1.5 }}>{message}</p>
+            </div>
 
-              <div
-                style={{
-                  background: '#f8fafc',
-                  border: '1px solid #d9e1ee',
-                  borderRadius: '14px',
-                  padding: '16px',
-                }}
-              >
-                <h2 style={{ marginTop: 0, marginBottom: '10px', fontSize: '1.1rem' }}>
-                  How to Play
-                </h2>
-                <p style={{ margin: 0, color: '#444', lineHeight: 1.6 }}>
-                  Click a square, then click a number. Gray squares are locked.
-                  Blue numbers are your entries. Red numbers are incorrect.
-                </p>
-              </div>
+            {/* How to Play */}
+            <div style={{
+              background: 'rgba(249, 115, 22, 0.05)',
+              border: '1px solid #f97316',
+              borderRadius: '14px',
+              padding: '16px',
+              boxShadow: '0 0 10px rgba(249, 115, 22, 0.2)',
+            }}>
+              <h2 style={{ marginTop: 0, marginBottom: '10px', fontSize: '1rem', color: '#f97316', letterSpacing: '2px', textShadow: '0 0 6px #f97316' }}>
+                HOW TO PLAY
+              </h2>
+              <p style={{ margin: 0, color: '#a3a3a3', lineHeight: 1.6, fontSize: '0.9rem' }}>
+                Click a square, then click a number.<br />
+                <span style={{ color: '#fed7aa' }}>Cream</span> = locked.{' '}
+                <span style={{ color: '#f97316' }}>Orange</span> = your entry.{' '}
+                <span style={{ color: '#ff2e63' }}>Red</span> = incorrect.{' '}
+                <span style={{ color: '#fbbf24' }}>Amber</span> = selected.
+              </p>
             </div>
           </div>
         </div>

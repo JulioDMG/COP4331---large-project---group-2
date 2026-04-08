@@ -31,7 +31,6 @@ function DinorunPage() {
   const obstacleIdRef = useRef(1);
 
   const isJumping = dinoY > 0;
-
   const dinoLeft = 90;
   const dinoBottom = 58 + dinoY;
 
@@ -58,7 +57,6 @@ function DinorunPage() {
       setVelocityY(JUMP_VELOCITY);
       return;
     }
-
     if (!isJumping && !isGameOver) {
       setVelocityY(JUMP_VELOCITY);
     }
@@ -66,21 +64,15 @@ function DinorunPage() {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (
-        e.code === 'Space' ||
-        e.code === 'ArrowUp' ||
-        e.code === 'KeyW'
-      ) {
+      if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') {
         e.preventDefault();
         jump();
       }
-
       if (e.code === 'Enter' && isGameOver) {
         e.preventDefault();
         startGame();
       }
     };
-
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isGameOver, isRunning, isJumping]);
@@ -103,89 +95,52 @@ function DinorunPage() {
       setDinoY((prevY) => {
         const nextVelocity = velocityY + GRAVITY * delta;
         let nextY = prevY - nextVelocity * delta;
-
         if (nextY < 0) nextY = 0;
-
         setVelocityY(nextY === 0 && nextVelocity > 0 ? 0 : nextVelocity);
         return nextY;
       });
 
-        spawnTimerRef.current += delta;
+      spawnTimerRef.current += delta;
+      const baseSpacing = 70;
+      const speedFactor = Math.max(1 - speed * 0.02, 0.6);
+      const randomFactor = 0.7 + Math.random() * 0.8;
+      const spawnThreshold = baseSpacing * speedFactor * randomFactor;
 
-        // bigger base spacing
-        const baseSpacing = 70;
-
-        // slow scaling (not too aggressive)
-        const speedFactor = Math.max(1 - speed * 0.02, 0.6);
-
-        // randomness so it doesn’t feel robotic
-        const randomFactor = 0.7 + Math.random() * 0.8;
-
-        // final threshold
-        const spawnThreshold = baseSpacing * speedFactor * randomFactor;
-
-        if (spawnTimerRef.current >= spawnThreshold) {
-          spawnTimerRef.current = 0;
-
-          const height = 35 + Math.floor(Math.random() * 40);
-          const width = 18 + Math.floor(Math.random() * 18);
-
-          const newObstacle = {
-            id: obstacleIdRef.current++,
-            x: GAME_WIDTH + 20,
-            width,
-            height,
-          };
+      if (spawnTimerRef.current >= spawnThreshold) {
+        spawnTimerRef.current = 0;
+        const height = 35 + Math.floor(Math.random() * 40);
+        const width = 18 + Math.floor(Math.random() * 18);
+        const newObstacle = { id: obstacleIdRef.current++, x: GAME_WIDTH + 20, width, height };
 
         setObstacles((prev) => {
-          // 20% chance to spawn a second close obstacle (challenge moment)
           if (Math.random() < 0.2) {
-          return [
-          ...prev,
-          newObstacle,
-          {
-            id: obstacleIdRef.current++,
-            x: GAME_WIDTH + 20 + width + 20, // small gap
-            width,
-            height,
-          },
-        ];
+            return [...prev, newObstacle, { id: obstacleIdRef.current++, x: GAME_WIDTH + 20 + width + 20, width, height }];
+          }
+          return [...prev, newObstacle];
+        });
       }
 
-      return [...prev, newObstacle];
-    });
-  }
-
-
       setObstacles((prev) =>
-        prev
-          .map((obs) => ({ ...obs, x: obs.x - speed * delta }))
-          .filter((obs) => obs.x + obs.width > -20)
+        prev.map((obs) => ({ ...obs, x: obs.x - speed * delta })).filter((obs) => obs.x + obs.width > -20)
       );
 
       animationRef.current = requestAnimationFrame(loop);
     };
 
     animationRef.current = requestAnimationFrame(loop);
-
-    return () => {
-      if (animationRef.current) cancelAnimationFrame(animationRef.current);
-    };
+    return () => { if (animationRef.current) cancelAnimationFrame(animationRef.current); };
   }, [isRunning, speed, velocityY]);
 
   useEffect(() => {
     if (!isRunning) return;
-
     const dinoBox = {
       left: dinoLeft,
       right: dinoLeft + DINO_SIZE,
       top: GROUND_Y - dinoBottom - DINO_SIZE,
       bottom: GROUND_Y - dinoBottom,
     };
-
     for (const obs of obstacles) {
       const obstacleGround = 58;
-
       const obstacleBox = {
         left: obs.x,
         right: obs.x + obs.width,
@@ -197,98 +152,114 @@ function DinorunPage() {
         dinoBox.left < obstacleBox.right &&
         dinoBox.bottom > obstacleBox.top &&
         dinoBox.top < obstacleBox.bottom;
-
-      if (hit) {
-        endGame();
-        break;
-      }
+      if (hit) { endGame(); break; }
     }
   }, [obstacles, dinoBottom, isRunning, score]);
 
   const displayScore = useMemo(() => Math.floor(score), [score]);
 
   return (
-  <div
-    style={{
-      minHeight: '100vh',
-      background: 'linear-gradient(...)',
-      padding: '32px 20px',
-      boxSizing: 'border-box',
-    }}
-  >
-    <button
-      onClick={() => navigate('/')}
-      className="buttons"
+    <div
+      style={{
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'radial-gradient(circle at top, #1a0005 0%, #0d0002 50%, #050001 100%)',
+        color: '#f8fafc',
+        padding: '24px 16px',
+        fontFamily: 'Arial, sans-serif',
+        boxSizing: 'border-box',
+      }}
     >
-      Back
-    </button>
-
-      <div
-        style={{
-          maxWidth: '980px',
-          margin: '0 auto',
-        }}
-      >
-        <div
+      {/* Back Button */}
+      <div style={{ width: '100%', maxWidth: '980px' }}>
+        <button
+          onClick={() => navigate('/')}
           style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
             marginBottom: '18px',
-            gap: '12px',
-            flexWrap: 'wrap',
+            padding: '10px 18px',
+            borderRadius: '10px',
+            border: '1px solid #dc143c',
+            cursor: 'pointer',
+            background: '#0d0002',
+            color: '#dc143c',
+            boxShadow: '0 0 12px rgba(220, 20, 60, 0.6)',
+            fontWeight: 'bold',
           }}
         >
+          ← Back
+        </button>
+      </div>
+
+      {/* Main Card */}
+      <div
+        style={{
+          width: '100%',
+          maxWidth: '980px',
+          background: 'rgba(10, 0, 2, 0.9)',
+          border: '2px solid #dc143c',
+          borderRadius: '20px',
+          padding: '28px',
+          boxShadow: '0 0 20px rgba(220, 20, 60, 0.4), 0 0 50px rgba(220, 20, 60, 0.1)',
+        }}
+      >
+        {/* Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '20px' }}>
           <div>
-            <h1 style={{ margin: 0, fontSize: '2rem' }}>Dino Run</h1>
-            <p style={{ margin: '8px 0 0', color: '#444' }}>
-              Press Space, W, or Up Arrow to jump.
+            <h1 style={{
+              margin: 0,
+              fontSize: '2.4rem',
+              letterSpacing: '4px',
+              color: '#fff0f2',
+              textShadow: '0 0 10px #dc143c, 0 0 24px #dc143c',
+            }}>
+              DINO RUN
+            </h1>
+            <p style={{ margin: '6px 0 0', color: '#a3a3a3', fontSize: '0.9rem' }}>
+              Press <strong style={{ color: '#dc143c' }}>Space</strong>,{' '}
+              <strong style={{ color: '#dc143c' }}>W</strong>, or{' '}
+              <strong style={{ color: '#dc143c' }}>↑</strong> to jump.
             </p>
           </div>
 
-          <div
-            style={{
-              display: 'flex',
-              gap: '12px',
-              flexWrap: 'wrap',
-              alignItems: 'center',
-            }}
-          >
-            <div
-              style={{
-                background: '#fff',
-                padding: '10px 14px',
-                borderRadius: '12px',
-                border: '1px solid #ddd',
-                fontWeight: 700,
-              }}
-            >
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
+            <div style={{
+              padding: '10px 16px',
+              borderRadius: '12px',
+              border: '1px solid #dc143c',
+              background: 'rgba(220, 20, 60, 0.08)',
+              fontWeight: 700,
+              color: '#dc143c',
+              boxShadow: '0 0 8px rgba(220,20,60,0.3)',
+            }}>
               Score: {displayScore}
             </div>
-
-            <div
-              style={{
-                background: '#fff',
-                padding: '10px 14px',
-                borderRadius: '12px',
-                border: '1px solid #ddd',
-                fontWeight: 700,
-              }}
-            >
+            <div style={{
+              padding: '10px 16px',
+              borderRadius: '12px',
+              border: '1px solid #fbbf24',
+              background: 'rgba(251, 191, 36, 0.06)',
+              fontWeight: 700,
+              color: '#fbbf24',
+              boxShadow: '0 0 8px rgba(251,191,36,0.3)',
+            }}>
               Best: {bestScore}
             </div>
-
             <button
               type="button"
               onClick={startGame}
               style={{
-                border: 'none',
                 borderRadius: '12px',
-                padding: '12px 18px',
+                padding: '10px 18px',
                 fontWeight: 700,
                 cursor: 'pointer',
-                background: '#111',
-                color: '#fff',
+                background: '#0d0002',
+                color: '#dc143c',
+                border: '1px solid #dc143c',
+                boxShadow: '0 0 10px rgba(220,20,60,0.5)',
+                letterSpacing: '1px',
               }}
             >
               {isGameOver ? 'Restart' : isRunning ? 'New Run' : 'Start Game'}
@@ -296,6 +267,7 @@ function DinorunPage() {
           </div>
         </div>
 
+        {/* Game Area */}
         <div
           onClick={jump}
           role="button"
@@ -311,254 +283,204 @@ function DinorunPage() {
             width: '100%',
             maxWidth: `${GAME_WIDTH}px`,
             height: '320px',
-            borderRadius: '20px',
+            borderRadius: '16px',
             overflow: 'hidden',
-            border: '2px solid #1d1d1d',
-            background:
-              'linear-gradient(to bottom, #c8efff 0%, #dff6ff 60%, #fefefe 100%)',
-            boxShadow: '0 10px 30px rgba(0,0,0,0.08)',
+            border: '2px solid #dc143c',
+            background: 'linear-gradient(to bottom, #0d0002 0%, #150005 60%, #1a0008 100%)',
+            boxShadow: 'inset 0 0 30px rgba(220, 20, 60, 0.05), 0 0 18px rgba(220,20,60,0.2)',
             cursor: 'pointer',
             outline: 'none',
             userSelect: 'none',
           }}
         >
-          <div
-            style={{
-              position: 'absolute',
-              top: '18px',
-              left: '18px',
-              background: 'rgba(255,255,255,0.9)',
-              padding: '8px 12px',
-              borderRadius: '10px',
-              border: '1px solid #ddd',
-              fontSize: '0.95rem',
-              fontWeight: 600,
-            }}
-          >
-            Click game area or press Space to jump
+          {/* Hint label */}
+          <div style={{
+            position: 'absolute',
+            top: '14px',
+            left: '14px',
+            background: 'rgba(220, 20, 60, 0.08)',
+            border: '1px solid rgba(220,20,60,0.35)',
+            padding: '6px 12px',
+            borderRadius: '8px',
+            fontSize: '0.85rem',
+            color: '#dc143c',
+          }}>
+            Click or press Space to jump
           </div>
 
-          {[120, 300, 520].map((x, i) => (
-            <div
-              key={i}
-              style={{
-                position: 'absolute',
-                left: `${x}px`,
-                top: `${40 + i * 10}px`,
-                width: '70px',
-                height: '24px',
-                borderRadius: '24px',
-                background: 'rgba(255,255,255,0.9)',
-                filter: 'blur(0.3px)',
-              }}
-            />
+          {/* Decorative stars */}
+          {[60, 180, 340, 520, 700, 820].map((x, i) => (
+            <div key={i} style={{
+              position: 'absolute',
+              left: `${x}px`,
+              top: `${20 + (i % 3) * 18}px`,
+              width: '3px',
+              height: '3px',
+              borderRadius: '50%',
+              background: '#dc143c',
+              opacity: 0.35,
+              boxShadow: '0 0 4px #dc143c',
+            }} />
           ))}
 
-          <div
-            style={{
-              position: 'absolute',
-              left: 0,
-              right: 0,
-              bottom: '58px',
-              height: '2px',
-              background:
-                'repeating-linear-gradient(to right, #444 0 24px, transparent 24px 38px)',
-              opacity: 0.45,
-            }}
-          />
+          {/* Ground dashes */}
+          <div style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            bottom: '58px',
+            height: '2px',
+            background: 'repeating-linear-gradient(to right, #dc143c 0 24px, transparent 24px 38px)',
+            opacity: 0.25,
+          }} />
 
-          <div
-            style={{
+          {/* Dino */}
+          <div style={{
+            position: 'absolute',
+            left: `${dinoLeft}px`,
+            bottom: `${dinoBottom}px`,
+            width: `${DINO_SIZE}px`,
+            height: `${DINO_SIZE}px`,
+            background: isGameOver ? '#555' : '#dc143c',
+            borderRadius: '8px',
+            boxShadow: isGameOver ? '0 0 8px rgba(100,100,100,0.5)' : '0 0 14px rgba(220,20,60,0.9)',
+            transition: 'background 120ms ease, box-shadow 120ms ease',
+          }}>
+            {/* Eye */}
+            <div style={{
               position: 'absolute',
-              left: `${dinoLeft}px`,
-              bottom: `${dinoBottom}px`,
-              width: `${DINO_SIZE}px`,
-              height: `${DINO_SIZE}px`,
-              background: isGameOver ? '#c0392b' : '#222',
-              borderRadius: '8px',
-              transition: 'background 120ms ease',
-            }}
-          >
-            <div
-              style={{
-                position: 'absolute',
-                right: '6px',
-                top: '8px',
-                width: '6px',
-                height: '6px',
-                background: '#fff',
-                borderRadius: '50%',
-              }}
-            />
-            <div
-              style={{
-                position: 'absolute',
-                left: '6px',
-                bottom: '-6px',
-                width: '8px',
-                height: '14px',
-                background: '#222',
-                borderRadius: '3px',
-              }}
-            />
-            <div
-              style={{
-                position: 'absolute',
-                left: '20px',
-                bottom: '-6px',
-                width: '8px',
-                height: '14px',
-                background: '#222',
-                borderRadius: '3px',
-              }}
-            />
-            <div
-              style={{
-                position: 'absolute',
-                left: '7px',
-                top: '-10px',
-                width: '8px',
-                height: '12px',
-                background: '#222',
-                borderRadius: '4px 4px 0 0',
-              }}
-            />
+              right: '6px',
+              top: '8px',
+              width: '6px',
+              height: '6px',
+              background: '#0d0002',
+              borderRadius: '50%',
+            }} />
+            {/* Legs */}
+            <div style={{ position: 'absolute', left: '6px', bottom: '-6px', width: '8px', height: '14px', background: isGameOver ? '#555' : '#dc143c', borderRadius: '3px', boxShadow: isGameOver ? 'none' : '0 0 6px rgba(220,20,60,0.7)' }} />
+            <div style={{ position: 'absolute', left: '20px', bottom: '-6px', width: '8px', height: '14px', background: isGameOver ? '#555' : '#dc143c', borderRadius: '3px', boxShadow: isGameOver ? 'none' : '0 0 6px rgba(220,20,60,0.7)' }} />
+            {/* Horn */}
+            <div style={{ position: 'absolute', left: '7px', top: '-10px', width: '8px', height: '12px', background: isGameOver ? '#555' : '#dc143c', borderRadius: '4px 4px 0 0' }} />
           </div>
 
+          {/* Obstacles */}
           {obstacles.map((obs) => (
-            <div
-              key={obs.id}
-              style={{
-                position: 'absolute',
-                left: `${obs.x}px`,
-                bottom: '58px',
-                width: `${obs.width}px`,
-                height: `${obs.height}px`,
-                background: '#2d7a35',
-                borderRadius: '6px 6px 0 0',
-              }}
-            >
-              <div
-                style={{
-                  position: 'absolute',
-                  top: '10px',
-                  left: '-6px',
-                  width: '10px',
-                  height: '16px',
-                  background: '#2d7a35',
-                  borderRadius: '5px',
-                }}
-              />
-              <div
-                style={{
-                  position: 'absolute',
-                  top: '18px',
-                  right: '-6px',
-                  width: '10px',
-                  height: '14px',
-                  background: '#2d7a35',
-                  borderRadius: '5px',
-                }}
-              />
+            <div key={obs.id} style={{
+              position: 'absolute',
+              left: `${obs.x}px`,
+              bottom: '58px',
+              width: `${obs.width}px`,
+              height: `${obs.height}px`,
+              background: '#ff6b6b',
+              borderRadius: '6px 6px 0 0',
+              boxShadow: '0 0 10px rgba(255, 107, 107, 0.6)',
+            }}>
+              <div style={{ position: 'absolute', top: '10px', left: '-6px', width: '10px', height: '16px', background: '#ff6b6b', borderRadius: '5px', boxShadow: '0 0 6px rgba(255,107,107,0.5)' }} />
+              <div style={{ position: 'absolute', top: '18px', right: '-6px', width: '10px', height: '14px', background: '#ff6b6b', borderRadius: '5px', boxShadow: '0 0 6px rgba(255,107,107,0.5)' }} />
             </div>
           ))}
 
-          <div
-            style={{
-              position: 'absolute',
-              left: 0,
-              right: 0,
-              bottom: 0,
-              height: '58px',
-              background: '#e8d3a9',
-              borderTop: '2px solid #222',
-            }}
-          />
+          {/* Ground */}
+          <div style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            bottom: 0,
+            height: '58px',
+            background: 'linear-gradient(to bottom, #1a0008, #0d0004)',
+            borderTop: '2px solid #dc143c',
+            boxShadow: '0 -4px 16px rgba(220,20,60,0.2)',
+          }} />
 
+          {/* Start overlay */}
           {!isRunning && !isGameOver && (
-            <div
-              style={{
-                position: 'absolute',
-                inset: 0,
-                display: 'grid',
-                placeItems: 'center',
-                background: 'rgba(255,255,255,0.18)',
-              }}
-            >
-              <div
-                style={{
-                  background: 'rgba(255,255,255,0.96)',
-                  padding: '20px 24px',
-                  borderRadius: '18px',
-                  border: '1px solid #ddd',
-                  textAlign: 'center',
-                  maxWidth: '420px',
-                }}
-              >
-                <h2 style={{ marginTop: 0 }}>Ready to run?</h2>
-                <p style={{ marginBottom: '14px', color: '#444' }}>
-                  Dodge the cacti and survive as long as you can.
+            <div style={{
+              position: 'absolute',
+              inset: 0,
+              display: 'grid',
+              placeItems: 'center',
+              background: 'rgba(0,0,0,0.55)',
+            }}>
+              <div style={{
+                background: 'rgba(10, 0, 2, 0.96)',
+                border: '2px solid #dc143c',
+                borderRadius: '18px',
+                padding: '24px 32px',
+                textAlign: 'center',
+                boxShadow: '0 0 24px rgba(220,20,60,0.5)',
+              }}>
+                <h2 style={{ marginTop: 0, color: '#dc143c', textShadow: '0 0 12px #dc143c', letterSpacing: '2px' }}>
+                  READY TO RUN?
+                </h2>
+                <p style={{ color: '#a3a3a3', marginBottom: '18px' }}>
+                  Dodge the obstacles and survive as long as you can.
                 </p>
                 <button
                   type="button"
                   onClick={startGame}
                   style={{
-                    border: 'none',
                     borderRadius: '12px',
-                    padding: '12px 18px',
+                    padding: '12px 24px',
                     fontWeight: 700,
                     cursor: 'pointer',
-                    background: '#111',
-                    color: '#fff',
+                    background: '#0d0002',
+                    color: '#dc143c',
+                    border: '1px solid #dc143c',
+                    boxShadow: '0 0 12px rgba(220,20,60,0.6)',
+                    fontSize: '1rem',
+                    letterSpacing: '1px',
                   }}
                 >
-                  Start
+                  START
                 </button>
               </div>
             </div>
           )}
 
+          {/* Game Over overlay */}
           {isGameOver && (
-            <div
-              style={{
-                position: 'absolute',
-                inset: 0,
-                display: 'grid',
-                placeItems: 'center',
-                background: 'rgba(0,0,0,0.18)',
-              }}
-            >
-              <div
-                style={{
-                  background: 'rgba(255,255,255,0.97)',
-                  padding: '24px 28px',
-                  borderRadius: '18px',
-                  border: '1px solid #ddd',
-                  textAlign: 'center',
-                  minWidth: '280px',
-                }}
-              >
-                <h2 style={{ marginTop: 0, marginBottom: '10px' }}>Game Over</h2>
-                <p style={{ margin: '6px 0', fontWeight: 700 }}>
+            <div style={{
+              position: 'absolute',
+              inset: 0,
+              display: 'grid',
+              placeItems: 'center',
+              background: 'rgba(0,0,0,0.65)',
+            }}>
+              <div style={{
+                background: 'rgba(10, 0, 2, 0.97)',
+                border: '2px solid #dc143c',
+                borderRadius: '18px',
+                padding: '24px 32px',
+                textAlign: 'center',
+                boxShadow: '0 0 24px rgba(220,20,60,0.6)',
+                minWidth: '280px',
+              }}>
+                <h2 style={{ marginTop: 0, color: '#dc143c', textShadow: '0 0 12px #dc143c', letterSpacing: '2px' }}>
+                  ✗ GAME OVER
+                </h2>
+                <p style={{ margin: '6px 0', fontWeight: 700, color: '#fbbf24' }}>
                   Score: {displayScore}
                 </p>
-                <p style={{ margin: '6px 0 18px', color: '#444' }}>
+                <p style={{ margin: '6px 0 18px', color: '#a3a3a3', fontSize: '0.9rem' }}>
                   Press Enter or click Restart
                 </p>
                 <button
                   type="button"
                   onClick={startGame}
                   style={{
-                    border: 'none',
                     borderRadius: '12px',
-                    padding: '12px 18px',
+                    padding: '12px 24px',
                     fontWeight: 700,
                     cursor: 'pointer',
-                    background: '#111',
-                    color: '#fff',
+                    background: '#0d0002',
+                    color: '#dc143c',
+                    border: '1px solid #dc143c',
+                    boxShadow: '0 0 12px rgba(220,20,60,0.6)',
+                    fontSize: '1rem',
+                    letterSpacing: '1px',
                   }}
                 >
-                  Restart
+                  RESTART
                 </button>
               </div>
             </div>

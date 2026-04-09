@@ -1,6 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import tictactoeImg from '../assets/Arcade_tictactoe.png';
+import minesweeperImg from '../assets/Arcade_minesweeper.png';
+import snakeImg from '../assets/Arcade_snake.png';
+import sudokuImg from '../assets/Arcade_sudoku.png';
+import dinorunImg from '../assets/Arcade_dinorun.png';
 
 const GAMES = ['tictactoe', 'minesweeper', 'snake', 'sudoku', 'dinorun'];
 
@@ -156,7 +161,12 @@ useEffect(() => {
         <section className="games-section">
           <h2>Available Games</h2>
 
-          <div className="game-card">
+          <div className="game-card" style={{ position: 'relative' }}>
+            <img
+              src={tictactoeImg}
+              alt="Tic-Tac-Toe"
+              style={{ position: 'absolute', top: '12px', right: '12px', width: '80px', height: '80px', objectFit: 'cover', borderRadius: '8px' }}
+            />
             <h3>Tic-Tac-Toe</h3>
             <p>Play a classic game and track your results later.</p>
             <button type="button" className="play-button" onClick={handlePlayClick}>
@@ -164,7 +174,12 @@ useEffect(() => {
             </button>
           </div>
 
-          <div className="game-card">
+          <div className="game-card" style={{ position: 'relative' }}>
+            <img
+              src={minesweeperImg}
+              alt="Minesweeper"
+              style={{ position: 'absolute', top: '12px', right: '12px', width: '80px', height: '80px', objectFit: 'cover', borderRadius: '8px' }}
+            />
             <h3>Minesweeper</h3>
             <p>Clear the board, avoid the mines, and test your logic.</p>
             <button type="button" className="play-button" onClick={() => isAuthenticated ? navigate('/minesweeper') : navigate('/login')}>
@@ -172,7 +187,12 @@ useEffect(() => {
             </button>
           </div>
 
-          <div className="game-card">
+          <div className="game-card" style={{ position: 'relative' }}>
+            <img
+              src={snakeImg}
+              alt="Snake"
+              style={{ position: 'absolute', top: '12px', right: '12px', width: '80px', height: '80px', objectFit: 'cover', borderRadius: '8px' }}
+            />
             <h3>Snake</h3>
             <p>Collect food, grow longer, and avoid crashing.</p>
             <button type="button" className="play-button" onClick={() => isAuthenticated ? navigate('/snake') : navigate('/login')}>
@@ -180,7 +200,12 @@ useEffect(() => {
             </button>
           </div>
 
-          <div className="game-card">
+          <div className="game-card" style={{ position: 'relative' }}>
+            <img
+              src={sudokuImg}
+              alt="Sudoku"
+              style={{ position: 'absolute', top: '12px', right: '12px', width: '80px', height: '80px', objectFit: 'cover', borderRadius: '8px' }}
+            />
             <h3>Sudoku</h3>
             <p>Solve the puzzle and test your logic skills.</p>
             <button type="button" className="play-button" onClick={() => isAuthenticated ? navigate('/sudoku') : navigate('/login')}>
@@ -196,7 +221,12 @@ useEffect(() => {
             </button>
           </div> */}
 
-          <div className="game-card">
+          <div className="game-card" style={{ position: 'relative' }}>
+            <img
+              src={dinorunImg}
+              alt="Dino Run"
+              style={{ position: 'absolute', top: '12px', right: '12px', width: '80px', height: '80px', objectFit: 'cover', borderRadius: '8px' }}
+            />
             <h3>Dino Run</h3>
             <p>Jump over obstacles and survive as long as you can.</p>
             <button type="button" className="play-button" onClick={() => isAuthenticated ? navigate('/dinorun') : navigate('/login')}>
@@ -208,5 +238,4 @@ useEffect(() => {
     </div>
   );
 }
-
 export default HomePage;

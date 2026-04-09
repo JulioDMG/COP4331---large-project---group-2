@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react'; // Added useCallback
 import { useNavigate } from 'react-router-dom';
 
 const ROWS = 10;
@@ -178,6 +178,30 @@ function MinesweeperPage() {
   const [flagsLeft, setFlagsLeft] = useState(MINES_COUNT);
   const [gameStarted, setGameStarted] = useState(false);
 
+  // 1. ADD: The Score API submission logic
+  const handleGameWin = useCallback(async () => {
+    setWon(true);
+
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+      await fetch('/api/scores', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ 
+          game: 'minesweeper', 
+          value: 1 // Sending 1 for a win
+        }),
+      });
+    } catch (err) {
+      console.error('Failed to submit score:', err);
+    }
+  }, []);
+
   const resetGame = () => {
     setBoard(createEmptyBoard());
     setGameOver(false);
@@ -216,7 +240,8 @@ function MinesweeperPage() {
     setBoard(currentBoard);
 
     if (checkWin(currentBoard)) {
-      setWon(true);
+      // 2. UPDATE: Call the API function instead of just setWon(true)
+      handleGameWin();
     }
   };
 
@@ -255,7 +280,11 @@ function MinesweeperPage() {
         alignItems: 'center',
         justifyContent: 'center',
         background:
-          'radial-gradient(circle at top, #24124d 0%, #12051f 45%, #05030d 100%)',
+          'radial-gradient(circle at top, rgba(36,18,77,0.85) 0%, rgba(18,5,31,0.85) 45%, rgba(5,3,13,0.85) 100%)',
+        // backgroundImage: `url(${minesweeperBg})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundBlendMode: 'overlay',
         color: '#f8fafc',
         padding: '20px',
         position: 'relative',

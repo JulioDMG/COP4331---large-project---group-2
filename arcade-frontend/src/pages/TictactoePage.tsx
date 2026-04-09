@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react'; // Added useCallback
 import { useNavigate } from 'react-router-dom';
 
 type SquareValue = 'X' | 'O' | null;
 
 const winningCombinations = [
-  [0, 1, 2],[3, 4, 5],[6, 7, 8],
-  [0, 3, 6],[1, 4, 7],[2, 5, 8],
-  [0, 4, 8],[2, 4, 6],
+  [0, 1, 2], [3, 4, 5], [6, 7, 8],
+  [0, 3, 6], [1, 4, 7], [2, 5, 8],
+  [0, 4, 8], [2, 4, 6],
 ];
 
 function calculateWinner(board: SquareValue[]): SquareValue | 'Draw' {
@@ -16,9 +16,11 @@ function calculateWinner(board: SquareValue[]): SquareValue | 'Draw' {
   if (board.every((square) => square !== null)) return 'Draw';
   return null;
 }
+
 function getAvailableMoves(board: SquareValue[]) {
   return board.map((v, i) => (v === null ? i : -1)).filter((i) => i !== -1);
 }
+
 function findWinningMove(board: SquareValue[], player: 'X' | 'O') {
   for (const move of getAvailableMoves(board)) {
     const testBoard = [...board];
@@ -27,6 +29,7 @@ function findWinningMove(board: SquareValue[], player: 'X' | 'O') {
   }
   return null;
 }
+
 function getCpuMove(board: SquareValue[]) {
   const winningMove = findWinningMove(board, 'O');
   if (winningMove !== null) return winningMove;
@@ -46,6 +49,33 @@ function TictactoePage() {
   const [status, setStatus] = useState('Your turn');
   const [gameOver, setGameOver] = useState(false);
 
+  // 1. ADD: Score submission logic
+  const handleGameOver = useCallback(async (winner: SquareValue | 'Draw') => {
+    setGameOver(true);
+
+    // Only submit to leaderboard if the player (X) wins
+    if (winner !== 'X') return;
+
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+      await fetch('/api/scores', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ 
+          game: 'tictactoe', 
+          value: 1 // Increment win count by 1
+        }),
+      });
+    } catch (err) {
+      console.error('Failed to submit score:', err);
+    }
+  }, []);
+
   const resetGame = () => {
     setBoard(Array(9).fill(null));
     setIsPlayerTurn(true);
@@ -60,8 +90,16 @@ function TictactoePage() {
     const result = calculateWinner(newBoard);
     setBoard(newBoard);
 
-    if (result === 'X') return setStatus('You win!'), setGameOver(true);
-    if (result === 'Draw') return setStatus('It’s a draw!'), setGameOver(true);
+    if (result === 'X') {
+      setStatus('You win!');
+      handleGameOver('X'); // 2. Trigger score update on win
+      return;
+    }
+    if (result === 'Draw') {
+      setStatus('It’s a draw!');
+      handleGameOver('Draw');
+      return;
+    }
 
     setIsPlayerTurn(false);
     setStatus('CPU is thinking...');
@@ -78,10 +116,10 @@ function TictactoePage() {
 
         if (result === 'O') {
           setStatus('CPU wins!');
-          setGameOver(true);
+          handleGameOver('O'); // 3. Handle CPU win
         } else if (result === 'Draw') {
           setStatus('It’s a draw!');
-          setGameOver(true);
+          handleGameOver('Draw');
         } else {
           setStatus('Your turn');
           setIsPlayerTurn(true);
@@ -90,7 +128,7 @@ function TictactoePage() {
       });
     }, 500);
     return () => clearTimeout(timeout);
-  }, [isPlayerTurn, gameOver]);
+  }, [isPlayerTurn, gameOver, handleGameOver]);
 
   return (
     <div style={{

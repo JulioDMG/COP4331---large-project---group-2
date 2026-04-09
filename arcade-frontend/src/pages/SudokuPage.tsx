@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 type CellPosition = {
@@ -70,23 +70,76 @@ function SudokuPage() {
   const navigate = useNavigate();
 
   const [puzzleIndex, setPuzzleIndex] = useState(0);
-  const currentPuzzle = useMemo(() => PUZZLES[puzzleIndex], [puzzleIndex]);
 
-  const [board, setBoard] = useState<number[][]>(cloneBoard(currentPuzzle.puzzle));
+  // Memoize current puzzle with safety fallback
+  const currentPuzzle = useMemo(() => {
+    return (PUZZLES && PUZZLES[puzzleIndex])
+      ? PUZZLES[puzzleIndex]
+      : { puzzle: Array(9).fill(0).map(() => Array(9).fill(0)), solution: [] };
+  }, [puzzleIndex]);
+
+  const [board, setBoard] = useState<number[][]>(() => cloneBoard(currentPuzzle.puzzle));
   const [selectedCell, setSelectedCell] = useState<CellPosition | null>(null);
   const [message, setMessage] = useState('Select a square and enter a number.');
+  const [hasSubmitted, setHasSubmitted] = useState(false);
 
   const initialPuzzle = currentPuzzle.puzzle;
   const solution = currentPuzzle.solution;
 
   const isFixedCell = (row: number, col: number) => initialPuzzle[row][col] !== 0;
 
+  // Re-sync board when the puzzle index changes
+  useEffect(() => {
+    setBoard(cloneBoard(currentPuzzle.puzzle));
+    setHasSubmitted(false);
+    setSelectedCell(null);
+    setMessage('New puzzle loaded.');
+  }, [currentPuzzle]);
+
+  const submitWin = useCallback(async () => {
+    if (hasSubmitted) return;
+    const token = localStorage.getItem('token');
+    if (!token) {
+        setHasSubmitted(true);
+        setMessage('Puzzle complete! (Log in to save scores)');
+        return;
+    }
+
+    try {
+      const response = await fetch('/api/scores', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ game: 'sudoku', value: 100 }),
+      });
+      if (response.ok) {
+        setHasSubmitted(true);
+        setMessage('Win recorded! 100 points added.');
+      }
+    } catch (err) {
+      console.error('Failed to submit score:', err);
+    }
+  }, [hasSubmitted]);
+
+  // Completion check
   const isBoardComplete = useMemo(() => {
-    for (let row = 0; row < 9; row++)
-      for (let col = 0; col < 9; col++)
+    if (!solution || solution.length === 0) return false;
+    for (let row = 0; row < 9; row++) {
+      for (let col = 0; col < 9; col++) {
         if (board[row][col] !== solution[row][col]) return false;
+      }
+    }
     return true;
   }, [board, solution]);
+
+  // Trigger submission effect
+  useEffect(() => {
+    if (isBoardComplete && !hasSubmitted) {
+      submitWin();
+    }
+  }, [isBoardComplete, hasSubmitted, submitWin]);
 
   const cellHasConflict = (row: number, col: number) => {
     const value = board[row][col];
@@ -122,15 +175,13 @@ function SudokuPage() {
   const handleReset = () => {
     setBoard(cloneBoard(initialPuzzle));
     setSelectedCell(null);
+    setHasSubmitted(false);
     setMessage('Puzzle reset.');
   };
 
   const handleNewPuzzle = () => {
     const nextIndex = (puzzleIndex + 1) % PUZZLES.length;
     setPuzzleIndex(nextIndex);
-    setBoard(cloneBoard(PUZZLES[nextIndex].puzzle));
-    setSelectedCell(null);
-    setMessage('New puzzle loaded.');
   };
 
   const neonBtn: React.CSSProperties = {
@@ -147,115 +198,38 @@ function SudokuPage() {
   };
 
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'radial-gradient(circle at top, #1f0a00 0%, #0f0500 50%, #020100 100%)',
-        color: '#f8fafc',
-        padding: '24px 16px',
-        fontFamily: 'Arial, sans-serif',
-        boxSizing: 'border-box',
-      }}
-    >
-      {/* Back Button */}
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'radial-gradient(circle at top, #1f0a00 0%, #0f0500 50%, #020100 100%)', color: '#f8fafc', padding: '24px 16px', fontFamily: 'Arial, sans-serif', boxSizing: 'border-box' }}>
+      
       <div style={{ width: '100%', maxWidth: '900px' }}>
-        <button
-          type="button"
-          onClick={() => navigate('/')}
-          style={{
-            marginBottom: '18px',
-            padding: '10px 18px',
-            borderRadius: '10px',
-            border: '1px solid #fbbf24',
-            cursor: 'pointer',
-            background: '#0f0500',
-            color: '#fbbf24',
-            boxShadow: '0 0 12px rgba(251, 191, 36, 0.6)',
-            fontWeight: 'bold',
-          }}
-        >
+        <button type="button" onClick={() => navigate('/')} style={{ marginBottom: '18px', padding: '10px 18px', borderRadius: '10px', border: '1px solid #fbbf24', cursor: 'pointer', background: '#0f0500', color: '#fbbf24', boxShadow: '0 0 12px rgba(251, 191, 36, 0.6)', fontWeight: 'bold' }}>
           ← Back
         </button>
       </div>
 
-      {/* Main Card */}
-      <div
-        style={{
-          width: '100%',
-          maxWidth: '900px',
-          background: 'rgba(15, 5, 0, 0.88)',
-          border: '2px solid #f97316',
-          borderRadius: '20px',
-          padding: '28px',
-          boxShadow: '0 0 20px rgba(249, 115, 22, 0.4), 0 0 50px rgba(249, 115, 22, 0.1)',
-        }}
-      >
-        {/* Header */}
+      <div style={{ width: '100%', maxWidth: '900px', background: 'rgba(15, 5, 0, 0.88)', border: '2px solid #f97316', borderRadius: '20px', padding: '28px', boxShadow: '0 0 20px rgba(249, 115, 22, 0.4), 0 0 50px rgba(249, 115, 22, 0.1)' }}>
+        
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '24px' }}>
           <div>
-            <h1 style={{
-              margin: 0,
-              fontSize: '2.4rem',
-              letterSpacing: '4px',
-              color: '#fff7ed',
-              textShadow: '0 0 10px #f97316, 0 0 24px #fb923c',
-            }}>
-              SUDOKU
-            </h1>
-            <p style={{ margin: '6px 0 0', color: '#a3a3a3', fontSize: '0.9rem' }}>
-              Fill every row, column, and 3×3 box with numbers 1–9.
-            </p>
+            <h1 style={{ margin: 0, fontSize: '2.4rem', letterSpacing: '4px', color: '#fff7ed', textShadow: '0 0 10px #f97316, 0 0 24px #fb923c' }}>SUDOKU</h1>
+            <p style={{ margin: '6px 0 0', color: '#a3a3a3', fontSize: '0.9rem' }}>Fill every row, column, and 3×3 box with numbers 1–9.</p>
           </div>
 
-          <div style={{
-            background: isBoardComplete ? 'rgba(57, 255, 20, 0.1)' : 'rgba(249, 115, 22, 0.1)',
-            border: `1px solid ${isBoardComplete ? '#39ff14' : '#f97316'}`,
-            borderRadius: '12px',
-            padding: '10px 18px',
-            fontWeight: 700,
-            color: isBoardComplete ? '#39ff14' : '#f97316',
-            boxShadow: isBoardComplete ? '0 0 10px rgba(57,255,20,0.4)' : '0 0 10px rgba(249,115,22,0.3)',
-            fontSize: '0.95rem',
-          }}>
+          <div style={{ background: isBoardComplete ? 'rgba(57, 255, 20, 0.1)' : 'rgba(249, 115, 22, 0.1)', border: `1px solid ${isBoardComplete ? '#39ff14' : '#f97316'}`, borderRadius: '12px', padding: '10px 18px', fontWeight: 700, color: isBoardComplete ? '#39ff14' : '#f97316', boxShadow: isBoardComplete ? '0 0 10px rgba(57,255,20,0.4)' : '0 0 10px rgba(249,115,22,0.3)', fontSize: '0.95rem' }}>
             {isBoardComplete ? '✓ Puzzle Complete!' : '● In Progress'}
           </div>
         </div>
 
-        {/* Grid + Controls */}
         <div style={{ display: 'grid', gridTemplateColumns: 'minmax(280px, 500px) minmax(200px, 1fr)', gap: '24px', alignItems: 'start' }}>
-
-          {/* Sudoku Grid */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(9, 1fr)',
-              gap: '0',
-              width: '100%',
-              aspectRatio: '1 / 1',
-              border: '3px solid #f97316',
-              borderRadius: '8px',
-              overflow: 'hidden',
-              boxShadow: '0 0 20px rgba(249, 115, 22, 0.5), inset 0 0 20px rgba(249, 115, 22, 0.04)',
-            }}
-          >
+          
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(9, 1fr)', gap: '0', width: '100%', aspectRatio: '1 / 1', border: '3px solid #f97316', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 0 20px rgba(249, 115, 22, 0.5), inset 0 0 20px rgba(249, 115, 22, 0.04)' }}>
             {board.map((row, rowIndex) =>
               row.map((value, colIndex) => {
                 const isSelected = selectedCell?.row === rowIndex && selectedCell?.col === colIndex;
                 const fixed = isFixedCell(rowIndex, colIndex);
                 const conflict = cellHasConflict(rowIndex, colIndex);
 
-                let bg = '#0f0400';
-                if (isSelected) bg = '#2d1000';
-                else if (fixed) bg = '#1a0a00';
-
-                let color = '#f97316';
-                if (fixed) color = '#fed7aa';
-                if (conflict) color = '#ff2e63';
-                if (isSelected && !fixed) color = '#fbbf24';
+                let bg = isSelected ? '#2d1000' : (fixed ? '#1a0a00' : '#0f0400');
+                let color = conflict ? '#ff2e63' : (isSelected && !fixed ? '#fbbf24' : (fixed ? '#fed7aa' : '#f97316'));
 
                 return (
                   <button
@@ -275,13 +249,6 @@ function SudokuPage() {
                       fontSize: '1.2rem',
                       fontWeight: fixed ? 800 : 700,
                       cursor: 'pointer',
-                      textShadow: conflict
-                        ? '0 0 6px #ff2e63'
-                        : isSelected
-                        ? '0 0 8px #fbbf24'
-                        : fixed
-                        ? 'none'
-                        : '0 0 4px #f97316',
                       transition: '0.1s ease',
                     }}
                   >
@@ -292,71 +259,31 @@ function SudokuPage() {
             )}
           </div>
 
-          {/* Side Panel */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-
-            {/* Number Buttons */}
-            <div style={{
-              background: 'rgba(249, 115, 22, 0.05)',
-              border: '1px solid #f97316',
-              borderRadius: '14px',
-              padding: '16px',
-              boxShadow: '0 0 10px rgba(249, 115, 22, 0.2)',
-            }}>
-              <h2 style={{ marginTop: 0, marginBottom: '12px', fontSize: '1rem', color: '#f97316', letterSpacing: '2px', textShadow: '0 0 6px #f97316' }}>
-                CONTROLS
-              </h2>
+            <div style={{ background: 'rgba(249, 115, 22, 0.05)', border: '1px solid #f97316', borderRadius: '14px', padding: '16px', boxShadow: '0 0 10px rgba(249, 115, 22, 0.2)' }}>
+              <h2 style={{ marginTop: 0, marginBottom: '12px', fontSize: '1rem', color: '#f97316', letterSpacing: '2px', textShadow: '0 0 6px #f97316' }}>CONTROLS</h2>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
                 {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
-                  <button key={num} type="button" onClick={() => handlePlaceNumber(num)} style={neonBtn}>
-                    {num}
-                  </button>
+                  <button key={num} type="button" onClick={() => handlePlaceNumber(num)} style={neonBtn}>{num}</button>
                 ))}
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '10px' }}>
-                <button type="button" onClick={handleClearCell} style={{ ...neonBtn, borderColor: '#fbbf24', color: '#fbbf24', boxShadow: '0 0 8px rgba(251,191,36,0.4)' }}>
-                  Clear
-                </button>
-                <button type="button" onClick={handleReset} style={{ ...neonBtn, borderColor: '#fbbf24', color: '#fbbf24', boxShadow: '0 0 8px rgba(251,191,36,0.4)' }}>
-                  Reset
-                </button>
+                <button type="button" onClick={handleClearCell} style={{ ...neonBtn, borderColor: '#fbbf24', color: '#fbbf24' }}>Clear</button>
+                <button type="button" onClick={handleReset} style={{ ...neonBtn, borderColor: '#fbbf24', color: '#fbbf24' }}>Reset</button>
               </div>
-              <button type="button" onClick={handleNewPuzzle} style={{ ...neonBtn, marginTop: '10px', width: '100%', borderColor: '#ff2e63', color: '#ff2e63', boxShadow: '0 0 8px rgba(255,46,99,0.4)' }}>
-                New Puzzle
-              </button>
+              <button type="button" onClick={handleNewPuzzle} style={{ ...neonBtn, marginTop: '10px', width: '100%', borderColor: '#ff2e63', color: '#ff2e63' }}>New Puzzle</button>
             </div>
 
-            {/* Status */}
-            <div style={{
-              background: 'rgba(249, 115, 22, 0.05)',
-              border: '1px solid #f97316',
-              borderRadius: '14px',
-              padding: '16px',
-              boxShadow: '0 0 10px rgba(249, 115, 22, 0.2)',
-            }}>
-              <h2 style={{ marginTop: 0, marginBottom: '10px', fontSize: '1rem', color: '#f97316', letterSpacing: '2px', textShadow: '0 0 6px #f97316' }}>
-                STATUS
-              </h2>
+            <div style={{ background: 'rgba(249, 115, 22, 0.05)', border: '1px solid #f97316', borderRadius: '14px', padding: '16px' }}>
+              <h2 style={{ marginTop: 0, marginBottom: '10px', fontSize: '1rem', color: '#f97316', letterSpacing: '2px' }}>STATUS</h2>
               <p style={{ margin: 0, color: '#cbd5e1', lineHeight: 1.5 }}>{message}</p>
             </div>
 
-            {/* How to Play */}
-            <div style={{
-              background: 'rgba(249, 115, 22, 0.05)',
-              border: '1px solid #f97316',
-              borderRadius: '14px',
-              padding: '16px',
-              boxShadow: '0 0 10px rgba(249, 115, 22, 0.2)',
-            }}>
-              <h2 style={{ marginTop: 0, marginBottom: '10px', fontSize: '1rem', color: '#f97316', letterSpacing: '2px', textShadow: '0 0 6px #f97316' }}>
-                HOW TO PLAY
-              </h2>
+            <div style={{ background: 'rgba(249, 115, 22, 0.05)', border: '1px solid #f97316', borderRadius: '14px', padding: '16px' }}>
+              <h2 style={{ marginTop: 0, marginBottom: '10px', fontSize: '1rem', color: '#f97316', letterSpacing: '2px' }}>HOW TO PLAY</h2>
               <p style={{ margin: 0, color: '#a3a3a3', lineHeight: 1.6, fontSize: '0.9rem' }}>
                 Click a square, then click a number.<br />
-                <span style={{ color: '#fed7aa' }}>Cream</span> = locked.{' '}
-                <span style={{ color: '#f97316' }}>Orange</span> = your entry.{' '}
-                <span style={{ color: '#ff2e63' }}>Red</span> = incorrect.{' '}
-                <span style={{ color: '#fbbf24' }}>Amber</span> = selected.
+                <span style={{ color: '#fed7aa' }}>Cream</span> = locked. <span style={{ color: '#f97316' }}>Orange</span> = entry. <span style={{ color: '#ff2e63' }}>Red</span> = incorrect.
               </p>
             </div>
           </div>

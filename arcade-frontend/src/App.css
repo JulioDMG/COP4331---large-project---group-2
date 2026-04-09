@@ -143,4 +143,100 @@ body {
   margin-bottom: 18px;
 }
 
+.leaderboard-section {
+  margin-top: 48px;
+  margin-bottom: 48px;
+}
 
+.leaderboard-title {
+  color: #fde68a;
+  margin-bottom: 16px;
+}
+
+.leaderboard-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.leaderboard-tab {
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(255, 140, 66, 0.2);
+  color: #e5e7eb;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.leaderboard-tab:hover {
+  border-color: rgba(255, 140, 66, 0.5);
+  color: #fff7ed;
+}
+
+.leaderboard-tab.active {
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+  border-color: transparent;
+  color: white;
+  box-shadow: 0 0 14px rgba(168, 85, 247, 0.35);
+}
+
+.leaderboard-card {
+  background: rgba(30, 41, 59, 0.78);
+  border: 1px solid rgba(255, 140, 66, 0.2);
+  border-radius: 16px;
+  padding: 20px;
+  max-width: 500px;
+  margin: 0 auto;
+  box-shadow: 0 0 24px rgba(255, 140, 66, 0.08);
+}
+
+.leaderboard-empty {
+  color: #94a3b8;
+  text-align: center;
+  padding: 16px 0;
+}
+
+.leaderboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.leaderboard-table th {
+  color: #fde68a;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(255, 140, 66, 0.2);
+}
+
+.leaderboard-table td {
+  padding: 10px 12px;
+  color: #e5e7eb;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.leaderboard-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.leaderboard-table tbody tr:hover td {
+  background: rgba(255, 140, 66, 0.05);
+}
+
+.rank-gold td {
+  color: #fbbf24;
+}
+
+.rank-silver td {
+  color: #cbd5e1;
+}
+
+.rank-bronze td {
+  color: #f97316;
+}

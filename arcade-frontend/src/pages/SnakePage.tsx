@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react'; // Added useCallback
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const GRID_SIZE = 15;
 const INITIAL_SNAKE = [{ x: 7, y: 7 }];
@@ -10,6 +11,8 @@ type Cell = { x: number; y: number };
 
 function SnakePage() {
   const navigate = useNavigate();
+  // Ensure useAuth provides the token or a way to get it
+  const { user: _user } = useAuth();
 
   const [snake, setSnake] = useState<Cell[]>(INITIAL_SNAKE);
   const [food, setFood] = useState<Cell>(INITIAL_FOOD);
@@ -17,6 +20,34 @@ function SnakePage() {
   const [isGameOver, setIsGameOver] = useState(false);
   const [isStarted, setIsStarted] = useState(false);
   const [score, setScore] = useState(0);
+
+  // 1. ADD: Function to handle sending the score to your Express backend
+  const handleGameOver = useCallback(async (finalScore: number) => {
+    setIsGameOver(true);
+    
+    // Only attempt to save if a user is logged in
+    const token = localStorage.getItem('token'); 
+    if (!token) {
+      console.warn("No token found, score not saved.");
+      return;
+    }
+
+    try {
+      await fetch('/api/scores', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ 
+          game: 'snake', 
+          value: finalScore 
+        }),
+      });
+    } catch (err) {
+      console.error('Failed to submit score:', err);
+    }
+  }, []);
 
   const getRandomFood = (currentSnake: Cell[]) => {
     let newFood: Cell;
@@ -40,11 +71,8 @@ function SnakePage() {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Prevent page scrolling on WASD
       if (['w', 'a', 's', 'd'].includes(e.key)) e.preventDefault();
-
       if (!isStarted && ['w', 'a', 's', 'd'].includes(e.key)) setIsStarted(true);
-
       if (e.key === 'w' && direction !== 'DOWN') setDirection('UP');
       if (e.key === 's' && direction !== 'UP') setDirection('DOWN');
       if (e.key === 'a' && direction !== 'RIGHT') setDirection('LEFT');
@@ -67,16 +95,13 @@ function SnakePage() {
         if (direction === 'LEFT') newHead.x -= 1;
         if (direction === 'RIGHT') newHead.x += 1;
 
+        // 2. UPDATE: Call handleGameOver instead of just setIsGameOver(true)
         if (
           newHead.x < 0 || newHead.x >= GRID_SIZE ||
-          newHead.y < 0 || newHead.y >= GRID_SIZE
+          newHead.y < 0 || newHead.y >= GRID_SIZE ||
+          prevSnake.some((s) => s.x === newHead.x && s.y === newHead.y)
         ) {
-          setIsGameOver(true);
-          return prevSnake;
-        }
-
-        if (prevSnake.some((s) => s.x === newHead.x && s.y === newHead.y)) {
-          setIsGameOver(true);
+          handleGameOver(score);
           return prevSnake;
         }
 
@@ -91,7 +116,7 @@ function SnakePage() {
       });
     }, 150);
     return () => clearInterval(interval);
-  }, [direction, food, isStarted, isGameOver]);
+  }, [direction, food, isStarted, isGameOver, score, handleGameOver]); // Added dependencies
 
   return (
     <div

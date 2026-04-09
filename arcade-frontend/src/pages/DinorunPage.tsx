@@ -1,10 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, useCallback } from 'react'; // Added useCallback
 import { useNavigate } from 'react-router-dom';
 
 const GAME_WIDTH = 900;
 const GROUND_Y = 260;
 const DINO_SIZE = 44;
-const GRAVITY = 0.9;
+const GRAVITY = 0.7;
 const JUMP_VELOCITY = -14;
 const INITIAL_SPEED = 6;
 
@@ -34,6 +34,28 @@ function DinorunPage() {
   const dinoLeft = 90;
   const dinoBottom = 58 + dinoY;
 
+  // 1. ADD: Score submission logic
+  const submitScore = useCallback(async (finalScore: number) => {
+    const token = localStorage.getItem('token');
+    if (!token || finalScore <= 0) return;
+
+    try {
+      await fetch('/api/scores', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ 
+          game: 'dinorun', 
+          value: Math.floor(finalScore) 
+        }),
+      });
+    } catch (err) {
+      console.error('Failed to submit Dino Run score:', err);
+    }
+  }, []);
+
   const startGame = () => {
     setIsRunning(true);
     setIsGameOver(false);
@@ -45,15 +67,17 @@ function DinorunPage() {
     spawnTimerRef.current = 0;
   };
 
-  const endGame = () => {
+  // 2. UPDATE: endGame now triggers the submission
+  const endGame = useCallback(() => {
     setIsRunning(false);
     setIsGameOver(true);
     setBestScore((prev) => Math.max(prev, score));
-  };
+    submitScore(score); // Trigger API call
+  }, [score, submitScore]);
 
   const jump = () => {
     if (!isRunning) {
-      startGame();
+      if (!isGameOver) startGame();
       setVelocityY(JUMP_VELOCITY);
       return;
     }
@@ -154,7 +178,7 @@ function DinorunPage() {
         dinoBox.top < obstacleBox.bottom;
       if (hit) { endGame(); break; }
     }
-  }, [obstacles, dinoBottom, isRunning, score]);
+  }, [obstacles, dinoBottom, isRunning, endGame]); // Added endGame to deps
 
   const displayScore = useMemo(() => Math.floor(score), [score]);
 

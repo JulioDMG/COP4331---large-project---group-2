@@ -17,6 +17,7 @@ interface AuthContextType {
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (username: string, email: string, password: string) => Promise<void>;
+  loginWithToken: (token: string, user: User) => void;
   logout: () => void;
 }
 
@@ -72,7 +73,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || 'Registration failed');
-    persist(data.data.token, data.data.user);
+  };
+
+  const loginWithToken = (t: string, u: User) => {
+    persist(t, u);
   };
 
   const logout = () => {
@@ -91,6 +95,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       login,
       register,
       logout,
+      loginWithToken,
     }}>
       {children}
     </AuthContext.Provider>

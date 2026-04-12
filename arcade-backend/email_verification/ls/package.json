@@ -1,0 +1,21 @@
+{
+  "name": "email_verification",
+  "version": "1.0.0",
+  "description": "email verification",
+  "license": "ISC",
+  "author": "Julian",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.0",
+    "express": "^5.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^6.9.13",
+    "razorpay": "^2.9.4",
+    "resend": "^4.0.0",
+    "svix": "^1.44.0"
+  }
+}

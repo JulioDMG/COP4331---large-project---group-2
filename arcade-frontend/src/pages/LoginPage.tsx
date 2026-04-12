@@ -18,7 +18,7 @@ interface AlertState {
 }
 
 function LoginPage() {
-  const { login, register } = useAuth();
+  const { login, register, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -39,6 +39,7 @@ function LoginPage() {
     setActiveTab(tab);
     setAlert({ message: '', type: '' });
     setForm({ username: '', email: '', password: '' });
+    if (tab === 'register') logout();
   };
 
   const handleLogin = useCallback(async (e: FormEvent) => {
@@ -73,15 +74,14 @@ function LoginPage() {
     setIsLoading(true);
     try {
       await register(form.username, form.email, form.password);
-      setAlert({ message: 'Account created! Redirecting…', type: 'success' });
-      setTimeout(() => navigate(from, { replace: true }), 1000);
+      navigate('/verify', { state: { email: form.email } });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Registration failed. Please try again.';
       setAlert({ message: msg, type: 'error' });
     } finally {
       setIsLoading(false);
     }
-  }, [form, register, navigate, from]);
+  }, [form, register, navigate]);
 
   return (
     <div className="app login-page-wrapper">

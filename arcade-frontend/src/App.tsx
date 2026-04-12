@@ -7,6 +7,9 @@ import MinesweeperPage from './pages/MinesweeperPage';
 import TictactoePage from './pages/TictactoePage';
 import SudokuPage from './pages/SudokuPage';
 import DinorunPage from './pages/DinorunPage';
+import VerificationPage         from './pages/VerificationPage';
+import VerificationConfirmation from './pages/VerificationConfirmation';
+
 /* import BattleshipPage from './pages/BattleshipPage';
  */import './App.css';
 
@@ -22,6 +25,8 @@ function App() {
           <Route path="/tictactoe" element={<TictactoePage />} />
           <Route path="/sudoku" element={<SudokuPage />} />
           <Route path="/dinorun" element={<DinorunPage />} />
+	  <Route path="/verify"         element={<VerificationPage />} />
+	  <Route path="/verify-confirm" element={<VerificationConfirmation />} />
 {/*           <Route path="/battleship" element={<BattleshipPage />} />
  */}        </Routes>
       </Router>
